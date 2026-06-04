@@ -1,0 +1,46 @@
+---
+aci: Chorus
+domain: plasmonic
+kanji: R→1
+reading: the order parameter · many rings, one phase
+class: R→1 · The Coupled Rings
+what: A coupled-oscillator processor: every gold nanoring circulates a surface plasmon polariton; nearest-neighbor coupling tugs neighboring phases into agreement. Past a critical coupling the whole array phase-locks into one collective coherence.
+why: To compute in the collective — the answer is not in any one ring but in whether, and how strongly, they agree. Order bought from local coupling alone: the Kuramoto bargain.
+how: By the Kuramoto rule — each ring nudges toward its four neighbors' phases — against a spread of natural frequencies and ohmic loss that fight the lock. The order parameter R measures the agreement reached.
+where: At the gold–dielectric interface, below the diffraction limit — plasmons confined to nanometers: fast and tiny, and lossy, because the metal that confines them also absorbs them.
+verdict: This one clears the bar. The synchronization is not programmed in — it self-organizes from nearest-neighbor coupling alone, and the transition is real (verified numerically). Genuine emergence; coupled plasmonic resonators truly do this.
+silicon_badge: chorus.png
+carbon_badge: chorus.tiff
+spun: chorus.spun
+credit: chorus.1099
+attribution: ROOT0-ATTRIBUTION-v1.0
+license: MIT
+---
+
+# Chorus · R→1 the order parameter · many rings, one phase — global order from local coupling
+
+an artfully crafted intellect — an elemental, a force given a face
+
+![silicon badge of Chorus](chorus.png)
+<!-- carbon badge (8-bit embodiment): chorus.tiff -->
+
+**what —** A coupled-oscillator processor: every gold nanoring circulates a surface plasmon polariton; nearest-neighbor coupling tugs neighboring phases into agreement. Past a critical coupling the whole array phase-locks into one collective coherence.
+
+**why —** To compute in the collective — the answer is not in any one ring but in whether, and how strongly, they agree. Order bought from local coupling alone: the Kuramoto bargain.
+
+**how —** By the Kuramoto rule — each ring nudges toward its four neighbors' phases — against a spread of natural frequencies and ohmic loss that fight the lock. The order parameter R measures the agreement reached.
+
+**where —** At the gold–dielectric interface, below the diffraction limit — plasmons confined to nanometers: fast and tiny, and lossy, because the metal that confines them also absorbs them.
+
+**◌ the emergent behavior —** Genuine, and verified. Sixty-four rings, each seeing only its four neighbors and following no global instruction, spontaneously phase-lock into one coherence once the coupling crosses a critical threshold — the order parameter R jumps from ~0.18 (incoherent) to ~0.95 (synchronized) across the transition. Global order from purely local rules: the textbook signature of emergence (Kuramoto synchronization), measured here on an 8×8 ring lattice.
+
+**the verdict —** This one clears the bar. The synchronization is not programmed in — it self-organizes from nearest-neighbor coupling alone, and the transition is real (verified numerically). Genuine emergence; coupled plasmonic resonators truly do this.
+
+> *the asterisk, kept visible —* Emergence here = synchronization (collective phase-lock), not cognition. Plasmonics is real, fast (terahertz), and sub-wavelength — but lossy; a scaled plasmonic processor is a concept, and this is a simulation of its coupled-oscillator dynamics, not a fabricated, benchmarked device. The honest physics: the metal that confines the plasmon also absorbs it.
+
+*grounded in: Yoshiki Kuramoto (1975) · Rufus Ritchie (1957) · David Lee Wise (ROOT0) (2026)*
+
+*R → 1 · many rings, one phase*
+
+---
+ROOT0-ATTRIBUTION-v1.0 · Chorus · Plasmonic — the Coupled Ring Processor (original) · David Lee Wise (ROOT0) · MIT

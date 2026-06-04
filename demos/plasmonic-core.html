@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Plasmonic Core — 8×8 · Coupled Gold Rings · Kuramoto</title>
+<style>
+  :root{
+    --void:#06060c; --gold:#ffce5a; --gold-hot:#f5a623; --amber:#ff9a3b;
+    --violet:#a78bfa; --cyan:#22d3ee; --ink:#e9e4d6; --mute:#8a8472;
+    --line:rgba(255,206,90,.14);
+  }
+  *{box-sizing:border-box}
+  html,body{height:100%;margin:0;background:var(--void);color:var(--ink);
+    font-family:Inter,system-ui,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;overflow:hidden}
+  .wrap{display:grid;grid-template-columns:330px 1fr;height:100%}
+
+  .side{
+    background:linear-gradient(180deg,rgba(14,12,8,.96),rgba(6,6,12,.97));
+    border-right:1px solid var(--line);
+    padding:18px 16px;display:flex;flex-direction:column;gap:14px;
+    backdrop-filter:blur(10px);z-index:5;overflow:auto
+  }
+  .brand{display:flex;gap:12px;align-items:center}
+  .logo{width:40px;height:40px;border-radius:11px;flex:none;position:relative;
+    background:conic-gradient(from 200deg,var(--gold),var(--amber),var(--gold-hot),var(--violet),var(--cyan),var(--gold));
+    box-shadow:0 0 22px rgba(255,206,90,.4),inset 0 0 14px rgba(0,0,0,.6)}
+  .logo:after{content:"";position:absolute;inset:7px;border-radius:7px;background:#0a0810;
+    box-shadow:inset 0 0 12px rgba(245,166,35,.45)}
+  .logo:before{content:"";position:absolute;left:50%;top:50%;width:8px;height:8px;margin:-4px 0 0 -4px;
+    border-radius:50%;background:var(--amber);box-shadow:0 0 12px var(--gold-hot);z-index:2}
+  .brand h1{margin:0;font-size:16px;letter-spacing:1.4px;font-weight:800;color:#fff4dc}
+  .brand .sub{font-size:10px;letter-spacing:.7px;color:var(--mute);margin-top:3px}
+
+  .group{background:rgba(16,13,9,.66);border:1px solid var(--line);border-radius:14px;
+    padding:12px 12px 13px;box-shadow:inset 0 0 24px rgba(255,206,90,.035)}
+  .group-title{font-size:10.5px;color:var(--gold);letter-spacing:1.4px;margin:1px 0 9px;opacity:.95;font-weight:700}
+
+  .slider-row{margin:9px 0 12px}
+  .slider-row label{display:flex;justify-content:space-between;font-size:12px;color:#d9cfb4;margin-bottom:5px}
+  .slider-row label span{font-family:ui-monospace,Consolas,monospace;color:#fff4dc}
+  input[type=range]{width:100%;height:24px;-webkit-appearance:none;appearance:none;background:transparent;margin:0;cursor:pointer}
+  input[type=range]::-webkit-slider-runnable-track{height:6px;border-radius:4px;
+    background:linear-gradient(90deg,rgba(255,206,90,.32),rgba(167,139,250,.32));border:1px solid rgba(255,206,90,.22)}
+  input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:16px;height:16px;border-radius:50%;
+    background:var(--gold);border:1px solid rgba(255,255,255,.65);margin-top:-6px;
+    box-shadow:0 0 12px rgba(255,206,90,.8);cursor:pointer}
+  input[type=range]::-moz-range-track{height:6px;border-radius:4px;
+    background:linear-gradient(90deg,rgba(255,206,90,.32),rgba(167,139,250,.32));border:1px solid rgba(255,206,90,.22)}
+  input[type=range]::-moz-range-thumb{width:16px;height:16px;border-radius:50%;background:var(--gold);
+    border:1px solid rgba(255,255,255,.65);box-shadow:0 0 12px rgba(255,206,90,.8);cursor:pointer}
+
+  .btns{display:flex;gap:8px;margin-top:4px}
+  .btn{flex:1;padding:10px 8px;background:rgba(255,206,90,.07);border:1px solid rgba(255,206,90,.26);
+    color:#f4e8cc;border-radius:10px;font-size:11.5px;cursor:pointer;transition:.18s;font-weight:700;letter-spacing:.4px}
+  .btn:hover{background:rgba(255,206,90,.14)}
+  .btn.sync{background:rgba(245,166,35,.14);border-color:rgba(245,166,35,.4)}
+  .btn.sync.active{background:rgba(245,166,35,.3);color:#fff;border-color:rgba(245,166,35,.7);
+    box-shadow:0 0 16px rgba(245,166,35,.35) inset,0 0 14px rgba(245,166,35,.3)}
+
+  /* order parameter readout */
+  .order{display:flex;align-items:baseline;gap:10px;margin:2px 0 8px}
+  .order .big{font-family:ui-monospace,Consolas,monospace;font-size:34px;font-weight:700;line-height:1;
+    color:#fff4dc;letter-spacing:.5px;text-shadow:0 0 18px rgba(255,206,90,.45)}
+  .order .lab{font-size:10px;color:var(--mute);letter-spacing:1px}
+  .order .lab b{display:block;font-size:15px;color:var(--gold);letter-spacing:.6px;margin-top:2px}
+  .ordbar{height:9px;border-radius:6px;background:rgba(0,0,0,.45);border:1px solid rgba(255,206,90,.2);
+    overflow:hidden;margin-bottom:6px}
+  .ordbar > i{display:block;height:100%;width:18%;border-radius:6px;
+    background:linear-gradient(90deg,var(--gold),var(--gold-hot) 55%,var(--violet));
+    box-shadow:0 0 12px rgba(255,206,90,.5);transition:width .12s linear}
+  .state{font-size:11px;letter-spacing:.8px;text-align:center;padding:5px;border-radius:8px;font-weight:700;
+    margin-bottom:10px;border:1px solid;transition:.2s}
+  .state.lo{color:#c9b48a;border-color:rgba(180,150,90,.3);background:rgba(180,150,90,.07)}
+  .state.mid{color:var(--amber);border-color:rgba(255,154,59,.4);background:rgba(255,154,59,.09)}
+  .state.hi{color:#0a0810;border-color:rgba(255,206,90,.8);background:linear-gradient(90deg,var(--gold),var(--gold-hot));
+    box-shadow:0 0 18px rgba(255,206,90,.4)}
+
+  .wheelWrap{display:flex;gap:12px;align-items:center;margin-bottom:6px}
+  .wheelWrap canvas{flex:none;border-radius:50%}
+  .wheelWrap .cap{font-size:9.5px;color:var(--mute);line-height:1.5;letter-spacing:.3px}
+  .wheelWrap .cap b{color:var(--gold)}
+
+  .out{margin-top:4px}
+  .out>div{font-size:10px;color:var(--gold);margin-bottom:4px;letter-spacing:.5px}
+  .out code{display:block;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:14px;
+    color:#fff4dc;background:rgba(0,0,0,.42);border:1px solid rgba(255,206,90,.2);padding:9px 9px;border-radius:8px;
+    text-align:center;letter-spacing:2px;box-shadow:inset 0 0 14px rgba(255,206,90,.06)}
+  .note{font-size:9.5px;color:var(--mute);line-height:1.55;letter-spacing:.2px;margin-top:auto;padding-top:6px}
+  .note b{color:var(--gold)}
+
+  .stage{position:relative;
+    background:radial-gradient(1300px 900px at 52% 42%,#11100a 0%,#0a0a10 54%,#04040a 100%)}
+  canvas#c{position:absolute;inset:0;width:100%;height:100%;display:block}
+  .footer{position:absolute;bottom:0;left:0;right:0;height:32px;display:flex;align-items:center;
+    justify-content:center;font-size:10.5px;color:#9b8a63;letter-spacing:.7px;
+    background:linear-gradient(180deg,transparent,rgba(0,0,0,.55));pointer-events:none;text-align:center;padding:0 10px}
+  .menu{display:none}
+  @media (max-width:920px){
+    .wrap{grid-template-columns:1fr}
+    .side{position:absolute;left:10px;top:10px;width:min(92vw,360px);max-height:90vh;border-radius:14px;
+      border:1px solid rgba(255,206,90,.22);box-shadow:0 12px 40px rgba(0,0,0,.6);transform:translateX(-115%);
+      transition:transform .28s ease}
+    .side.open{transform:translateX(0)}
+    .menu{display:flex;position:absolute;left:12px;top:12px;z-index:8;width:44px;height:44px;
+      align-items:center;justify-content:center;border-radius:11px;cursor:pointer;
+      background:rgba(14,12,8,.92);border:1px solid rgba(255,206,90,.32);color:var(--gold);
+      font-size:20px;box-shadow:0 0 16px rgba(255,206,90,.22)}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="menu" id="menu">≡</div>
+  <aside class="side" id="side">
+    <div class="brand">
+      <div class="logo"></div>
+      <div>
+        <h1>PLASMONIC CORE</h1>
+        <div class="sub">coupled gold rings · Kuramoto · 8×8</div>
+      </div>
+    </div>
+
+    <div class="group">
+      <div class="group-title">FIELD CONTROL</div>
+      <div class="slider-row">
+        <label>Coupling K <span id="kV">0.40</span></label>
+        <input id="kEl" type="range" min="0" max="6" value="0.4" step="0.01">
+      </div>
+      <div class="slider-row">
+        <label>Ohmic Loss <span id="lossV">0.20</span></label>
+        <input id="lossEl" type="range" min="0" max="1" value="0.2" step="0.01">
+      </div>
+      <div class="slider-row">
+        <label>Frequency Spread <span id="spreadV">1.00</span></label>
+        <input id="spreadEl" type="range" min="0" max="3" value="1" step="0.01">
+      </div>
+      <div class="slider-row">
+        <label>Drive <span id="driveV">1.00</span></label>
+        <input id="driveEl" type="range" min="0.2" max="2.5" value="1" step="0.01">
+      </div>
+      <div class="btns">
+        <button class="btn sync" id="syncBtn">▶ DRIVE TO SYNC</button>
+      </div>
+    </div>
+
+    <div class="group">
+      <div class="group-title">DATA</div>
+      <div class="order">
+        <div class="big" id="rBig">0.18</div>
+        <div class="lab">ORDER<br>PARAMETER<b>R</b></div>
+      </div>
+      <div class="ordbar"><i id="rBar"></i></div>
+      <div class="state lo" id="stateEl">INCOHERENT</div>
+
+      <div class="wheelWrap">
+        <canvas id="wheel" width="104" height="104"></canvas>
+        <div class="cap">Phase wheel — each dot is a ring at angle <b>θᵢ</b>.
+          Spread around the circle = <b>incoherent</b>; clustered into one arc = <b>locked</b>.</div>
+      </div>
+
+      <div class="out">
+        <div>CORE WORD · 40-bit C2 continuity (hex)</div>
+        <code id="coreHex">0000000000</code>
+      </div>
+    </div>
+
+    <div class="note">
+      real cousins: <b>surface plasmons</b> · <b>gold nanorings</b> · sub-λ confinement · <b>ohmic loss</b>.
+      Sync is genuinely emergent — it self-organizes from local nearest-neighbor coupling, not scripted.
+    </div>
+  </aside>
+
+  <main class="stage">
+    <canvas id="c"></canvas>
+    <div class="footer">PLASMONIC PROCESSOR · coupled gold ring resonators · emergent synchronization (Kuramoto) — simulation</div>
+  </main>
+</div>
+
+<script>
+"use strict";
+const $ = id => document.getElementById(id);
+const canvas = $('c'), ctx = canvas.getContext('2d');
+const wheel = $('wheel'), wctx = wheel.getContext('2d');
+const reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+const N = 8;                 // grid side
+const COUNT = N*N;           // 64 rings
+
+// ---- Control state ----
+let K = 0.4;        // coupling (headline)
+let loss = 0.2;     // ohmic damping (fights the lock)
+let spread = 1.0;   // natural-frequency spread (sigma scale)
+let drive = 1.0;    // overall drive rate
+
+// ---- Ring oscillator state ----
+const theta = new Float64Array(COUNT);   // phase of each ring's SPP
+const omega = new Float64Array(COUNT);   // natural frequency (rad/s)
+const baseOmega = new Float64Array(COUNT); // unit-spread sample (multiplied by `spread`)
+
+// box-muller Gaussian
+function gauss(){
+  let u=0,v=0; while(u===0)u=Math.random(); while(v===0)v=Math.random();
+  return Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v);
+}
+const OMEGA0 = 1.6; // mean angular frequency
+for(let i=0;i<COUNT;i++){
+  theta[i] = Math.random()*Math.PI*2;
+  baseOmega[i] = gauss();               // ~N(0,1)
+}
+function applySpread(){
+  for(let i=0;i<COUNT;i++) omega[i] = OMEGA0 + baseOmega[i]*0.9*spread;
+}
+applySpread();
+
+// neighbor index lists (4-neighbor grid, no wrap)
+const neighbors = [];
+for(let r=0;r<N;r++) for(let c=0;c<N;c++){
+  const list=[];
+  if(r>0) list.push((r-1)*N+c);
+  if(r<N-1) list.push((r+1)*N+c);
+  if(c>0) list.push(r*N+(c-1));
+  if(c<N-1) list.push(r*N+(c+1));
+  neighbors.push(list);
+}
+
+// ---- Order parameter (computed for real from phases) ----
+let R = 0.18, psi = 0; // magnitude + mean phase
+function computeOrder(){
+  let sx=0, sy=0;
+  for(let i=0;i<COUNT;i++){ sx+=Math.cos(theta[i]); sy+=Math.sin(theta[i]); }
+  sx/=COUNT; sy/=COUNT;
+  R = Math.sqrt(sx*sx+sy*sy);
+  psi = Math.atan2(sy,sx);
+}
+
+// ---- Kuramoto integration (genuine nearest-neighbor coupling sum) ----
+const dtheta = new Float64Array(COUNT);
+function stepKuramoto(dt){
+  // effective coupling reduced by ohmic loss (loss fights the lock)
+  const Keff = K * (1 - 0.7*loss);
+  for(let i=0;i<COUNT;i++){
+    const nb = neighbors[i];
+    let s = 0;
+    for(let j=0;j<nb.length;j++) s += Math.sin(theta[nb[j]] - theta[i]);
+    // θ' = θ + dt·( ω + (K/4)·Σ sin(θj−θi) ) ; loss also damps intrinsic drive a touch
+    const coupling = nb.length ? (Keff/4) * s : 0;
+    dtheta[i] = (omega[i]*(1 - 0.25*loss) + coupling) * drive;
+  }
+  for(let i=0;i<COUNT;i++){
+    theta[i] += dtheta[i]*dt;
+    // wrap to keep numbers tidy
+    if(theta[i]>1e6){ theta[i] = theta[i] % (Math.PI*2); }
+  }
+}
+
+// ---- CORE word: 2 bits per ring from phase quadrant, folded to 40 bits ----
+// chaotic when incoherent, stabilizes when locked (phases share quadrants)
+function computeCore(){
+  // build 128 raw bits (2 per ring), fold/XOR down to 40 bits
+  let acc = 0n;
+  for(let i=0;i<COUNT;i++){
+    // quadrant of phase relative to mean phase -> 2 bits
+    let a = theta[i] - psi;
+    a = ((a % (Math.PI*2)) + Math.PI*2) % (Math.PI*2);
+    const q = Math.floor(a / (Math.PI/2)) & 3;   // 0..3
+    acc = (acc << 2n) | BigInt(q);
+  }
+  // fold 128 bits into 40: xor the high chunk into the low 40
+  const MASK40 = (1n<<40n)-1n;
+  let w = acc & MASK40;
+  w ^= (acc >> 40n) & MASK40;
+  w ^= (acc >> 80n) & MASK40;
+  return w & MASK40;
+}
+
+// ---- Controls wiring ----
+const kEl=$('kEl'), lossEl=$('lossEl'), spreadEl=$('spreadEl'), driveEl=$('driveEl');
+function fmt2(v){ return v.toFixed(2); }
+function syncLabels(){
+  $('kV').textContent = fmt2(K);
+  $('lossV').textContent = fmt2(loss);
+  $('spreadV').textContent = fmt2(spread);
+  $('driveV').textContent = fmt2(drive);
+}
+kEl.addEventListener('input',e=>{ K=parseFloat(e.target.value); stopRamp(); syncLabels(); });
+lossEl.addEventListener('input',e=>{ loss=parseFloat(e.target.value); syncLabels(); });
+spreadEl.addEventListener('input',e=>{ spread=parseFloat(e.target.value); applySpread(); syncLabels(); });
+driveEl.addEventListener('input',e=>{ drive=parseFloat(e.target.value); syncLabels(); });
+syncLabels();
+
+// DRIVE TO SYNC: ramp K up smoothly so you can watch the transition
+let ramping=false;
+const syncBtn=$('syncBtn');
+function stopRamp(){ if(ramping){ ramping=false; syncBtn.classList.remove('active'); syncBtn.textContent='▶ DRIVE TO SYNC'; } }
+syncBtn.addEventListener('click',()=>{
+  if(ramping){ stopRamp(); return; }
+  ramping=true; syncBtn.classList.add('active'); syncBtn.textContent='■ RAMPING…';
+});
+function tickRamp(dt){
+  if(!ramping) return;
+  const target = 4.2;
+  K += (target - K) * Math.min(1, dt*0.9);   // ease toward strong coupling
+  if(K > target-0.02){ K = target; }
+  kEl.value = K.toFixed(2);
+  $('kV').textContent = fmt2(K);
+}
+
+// mobile menu
+$('menu').addEventListener('click',()=>$('side').classList.toggle('open'));
+
+// ---- Canvas resize ----
+function resize(){
+  const dpr=Math.min(window.devicePixelRatio||1,2);
+  canvas.width=Math.max(1,Math.round(canvas.clientWidth*dpr));
+  canvas.height=Math.max(1,Math.round(canvas.clientHeight*dpr));
+  ctx.setTransform(dpr,0,0,dpr,0,0);
+}
+window.addEventListener('resize',resize); resize();
+
+// faint dielectric substrate speckle (static)
+const speck=[];
+for(let i=0;i<70;i++) speck.push({x:Math.random(),y:Math.random(),s:Math.random()*1.1+.2,a:Math.random()*0.22+0.05});
+
+// ---- phase wheel render ----
+function drawWheel(){
+  const w=wheel.width, h=wheel.height, cx=w/2, cy=h/2, rad=w/2-8;
+  wctx.clearRect(0,0,w,h);
+  // ring
+  wctx.strokeStyle='rgba(255,206,90,.35)'; wctx.lineWidth=1.4;
+  wctx.beginPath(); wctx.arc(cx,cy,rad,0,Math.PI*2); wctx.stroke();
+  // crosshair
+  wctx.strokeStyle='rgba(255,206,90,.12)'; wctx.lineWidth=1;
+  wctx.beginPath(); wctx.moveTo(cx-rad,cy); wctx.lineTo(cx+rad,cy);
+  wctx.moveTo(cx,cy-rad); wctx.lineTo(cx,cy+rad); wctx.stroke();
+  // dots
+  for(let i=0;i<COUNT;i++){
+    const x=cx+Math.cos(theta[i])*rad, y=cy+Math.sin(theta[i])*rad;
+    wctx.fillStyle='rgba(167,139,250,.9)';
+    wctx.beginPath(); wctx.arc(x,y,2,0,Math.PI*2); wctx.fill();
+  }
+  // mean-phase / order vector (length = R)
+  const mx=cx+Math.cos(psi)*rad*R, my=cy+Math.sin(psi)*rad*R;
+  wctx.strokeStyle='rgba(245,166,35,.95)'; wctx.lineWidth=2;
+  wctx.shadowColor='rgba(245,166,35,.8)'; wctx.shadowBlur=8;
+  wctx.beginPath(); wctx.moveTo(cx,cy); wctx.lineTo(mx,my); wctx.stroke();
+  wctx.shadowBlur=0;
+  wctx.fillStyle='#ffce5a';
+  wctx.beginPath(); wctx.arc(mx,my,2.6,0,Math.PI*2); wctx.fill();
+}
+
+// ---- main visualization ----
+let lastDom=0, lastT=0, coreWord=0n;
+
+function draw(now){
+  const W=canvas.clientWidth, H=canvas.clientHeight;
+  const t=now*0.001;
+  let dt = lastT? (t-lastT):0.016; lastT=t;
+  if(dt>0.05) dt=0.05;          // clamp big gaps
+  ctx.clearRect(0,0,W,H);
+
+  // ---- physics: ramp + fixed-dt substeps for stable integration ----
+  if(!reduceMotion){
+    tickRamp(dt);
+    // integrate at fixed dt≈0.05, 3 substeps per frame (decoupled from frame rate)
+    for(let s=0;s<3;s++) stepKuramoto(0.05);
+  }
+  computeOrder();
+
+  // ---- background speckle + faint substrate sheen ----
+  ctx.save();
+  for(const d of speck){ ctx.globalAlpha=d.a; ctx.fillStyle='#ffce5a';
+    ctx.beginPath(); ctx.arc(d.x*W,d.y*H,d.s,0,Math.PI*2); ctx.fill(); }
+  ctx.globalAlpha=1; ctx.restore();
+
+  // ---- grid layout ----
+  const margin = Math.min(W,H)*0.10;
+  const gridW = Math.min(W*0.82, H*0.92);
+  const cell = gridW / N;
+  const ox = W*0.52 - gridW/2;          // grid origin x (nudged right of sidebar gap)
+  const oy = H*0.50 - gridW/2;
+  const ringR = cell*0.30;
+  const small = W<700;
+
+  function ringCenter(i){
+    const r=(i/N)|0, c=i%N;
+    return { x: ox + (c+0.5)*cell, y: oy + (r+0.5)*cell };
+  }
+
+  // ---- coupling links (brighten as neighbors align) ----
+  ctx.lineWidth = small?1:1.4;
+  for(let i=0;i<COUNT;i++){
+    const ci=ringCenter(i), nb=neighbors[i];
+    for(let k=0;k<nb.length;k++){
+      const j=nb[k];
+      if(j<i) continue;                 // draw each edge once
+      const cj=ringCenter(j);
+      const align = 0.5+0.5*Math.cos(theta[i]-theta[j]); // 0..1
+      const a = 0.04 + 0.34*align*align;
+      ctx.strokeStyle='rgba(255,206,90,'+a.toFixed(3)+')';
+      ctx.beginPath(); ctx.moveTo(ci.x,ci.y); ctx.lineTo(cj.x,cj.y); ctx.stroke();
+
+      // field hotspot at midpoint when neighbors are tightly aligned (sub-λ confinement)
+      if(align>0.86){
+        const mx=(ci.x+cj.x)/2, my=(ci.y+cj.y)/2;
+        const hot=(align-0.86)/0.14;
+        const g=ctx.createRadialGradient(mx,my,0,mx,my,cell*0.22);
+        g.addColorStop(0,'rgba(255,250,235,'+(0.6*hot)+')');
+        g.addColorStop(0.4,'rgba(255,154,59,'+(0.45*hot)+')');
+        g.addColorStop(1,'rgba(255,154,59,0)');
+        ctx.fillStyle=g; ctx.beginPath(); ctx.arc(mx,my,cell*0.22,0,Math.PI*2); ctx.fill();
+      }
+    }
+  }
+
+  // ---- rings + SPP arcs ----
+  // hue blends gold->violet by global order, but per-ring brightness tracks local alignment
+  for(let i=0;i<COUNT;i++){
+    const ce=ringCenter(i), th=theta[i];
+
+    // local coherence of this ring vs its neighbors (drives brightness/hue)
+    const nb=neighbors[i]; let lc=0;
+    for(let k=0;k<nb.length;k++) lc+=Math.cos(theta[nb[k]]-th);
+    lc = nb.length? (0.5+0.5*(lc/nb.length)) : 0.5;  // 0..1
+    const bright = 0.30 + 0.70*lc;
+
+    // gold ring body with faint sheen
+    ctx.lineWidth = small?2:2.6;
+    ctx.strokeStyle='rgba(255,206,90,'+(0.16+0.20*lc).toFixed(3)+')';
+    ctx.beginPath(); ctx.arc(ce.x,ce.y,ringR,0,Math.PI*2); ctx.stroke();
+    // inner sheen
+    ctx.strokeStyle='rgba(255,240,200,'+(0.05+0.10*lc).toFixed(3)+')';
+    ctx.lineWidth=1; ctx.beginPath(); ctx.arc(ce.x,ce.y,ringR*0.82,0,Math.PI*2); ctx.stroke();
+
+    // SPP arc: bright leading head + fading tail racing around the ring at phase th
+    const tail = 1.5;                  // radians of tail
+    const steps = 14;
+    const headHue = lc>0.7 ? '255,206,90' : '167,139,250'; // locked->gold, drifting->violet
+    for(let s=0;s<steps;s++){
+      const f=s/(steps-1);             // 0=head .. 1=tail end
+      const a = th - f*tail;
+      const x=ce.x+Math.cos(a)*ringR, y=ce.y+Math.sin(a)*ringR;
+      const alpha=(1-f)*(1-f)*bright;
+      ctx.globalAlpha=alpha;
+      ctx.fillStyle='rgb('+headHue+')';
+      ctx.shadowColor='rgba(245,166,35,'+bright+')';
+      ctx.shadowBlur=(s===0? (small?7:11):4)*bright;
+      const rr=(s===0? (small?2.4:3.2):(small?1.2:1.8))*(0.7+0.6*bright);
+      ctx.beginPath(); ctx.arc(x,y,rr,0,Math.PI*2); ctx.fill();
+    }
+    ctx.globalAlpha=1; ctx.shadowBlur=0;
+
+    // bright head core (white-hot)
+    const hx=ce.x+Math.cos(th)*ringR, hy=ce.y+Math.sin(th)*ringR;
+    ctx.globalAlpha=Math.min(1,0.5+bright);
+    ctx.fillStyle='rgba(255,252,240,0.95)';
+    ctx.shadowColor='rgba(255,206,90,1)'; ctx.shadowBlur=(small?6:10)*bright;
+    ctx.beginPath(); ctx.arc(hx,hy,(small?1.1:1.6),0,Math.PI*2); ctx.fill();
+    ctx.globalAlpha=1; ctx.shadowBlur=0;
+  }
+
+  // ---- collective "breathing" halo when synchronized ----
+  if(R>0.55){
+    const cx=ox+gridW/2, cy=oy+gridW/2;
+    const pulse=0.5+0.5*Math.sin(psi);     // breathes with the collective phase
+    const hot=(R-0.55)/0.45;
+    const g=ctx.createRadialGradient(cx,cy,gridW*0.2,cx,cy,gridW*0.62);
+    g.addColorStop(0,'rgba(255,206,90,'+(0.05*hot*(0.5+pulse))+')');
+    g.addColorStop(1,'rgba(255,206,90,0)');
+    ctx.fillStyle=g; ctx.beginPath(); ctx.arc(cx,cy,gridW*0.62,0,Math.PI*2); ctx.fill();
+  }
+
+  // ---- compute core word ----
+  coreWord = computeCore();
+
+  // ---- phase wheel (cheap, every frame) ----
+  drawWheel();
+
+  // ---- throttle DOM text ~10/s ----
+  if(now-lastDom>100){
+    lastDom=now;
+    $('rBig').textContent = R.toFixed(2);
+    $('rBar').style.width = Math.max(2,R*100).toFixed(1)+'%';
+    const st=$('stateEl');
+    if(R<0.3){ st.textContent='INCOHERENT'; st.className='state lo'; }
+    else if(R<0.75){ st.textContent='PARTIAL LOCK'; st.className='state mid'; }
+    else { st.textContent='SYNCHRONIZED'; st.className='state hi'; }
+    $('coreHex').textContent = coreWord.toString(16).padStart(10,'0').toUpperCase();
+  }
+
+  // vignette
+  const vg=ctx.createRadialGradient(W*0.52,H*0.5,Math.min(W,H)*0.25,W*0.52,H*0.5,Math.max(W,H)*0.78);
+  vg.addColorStop(0,'rgba(0,0,0,0)'); vg.addColorStop(1,'rgba(0,0,0,0.5)');
+  ctx.fillStyle=vg; ctx.fillRect(0,0,W,H);
+
+  requestAnimationFrame(draw);
+}
+requestAnimationFrame(draw);
+</script>
+</body>
+</html>

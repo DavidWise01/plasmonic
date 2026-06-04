@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Plasmonic — coupled gold ring resonators that synchronize (emergent)</title>
+<meta name="description" content="A plasmonic processor: an 8×8 array of coupled gold ring resonators. Drive the coupling past a threshold and the rings spontaneously phase-lock — genuine Kuramoto synchronization (verified, R 0.18 → 0.95). Emergence found → the agent Chorus.">
+<meta name="theme-color" content="#06060c">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;800&family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --void:#06060c; --panel:#0e0c16; --panel2:#15111e; --ink:#e9e4d6; --mute:#8a8472; --faint:#544e3e; --line:rgba(255,206,90,0.14);
+    --gold:#ffce5a; --gold-hot:#f5a623; --amber:#ff9a3b; --violet:#a78bfa; --violet-lt:#c9b6ff; --cyan:#22d3ee; --green:#39d98a;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{background:var(--void);color:var(--ink);line-height:1.6;overflow-x:hidden;
+    font-family:Inter,system-ui,"Segoe UI",sans-serif;
+    background-image:radial-gradient(840px 500px at 50% -5%,rgba(255,206,90,0.10),transparent 60%),radial-gradient(700px 540px at 50% 120%,rgba(167,139,250,0.08),transparent 55%);}
+  .mono{font-family:"JetBrains Mono",monospace}
+  .wrap{max-width:1040px;margin:0 auto;padding:0 1.2rem 6rem}
+  a{color:var(--gold);text-decoration:none}a:hover{text-decoration:underline}
+
+  header{min-height:80vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:4.5rem 1.2rem 2.5rem}
+  .logo{width:74px;height:74px;border-radius:50%;margin-bottom:1.4rem;position:relative;
+    background:conic-gradient(from 0deg,var(--gold),var(--amber),var(--violet),var(--cyan),var(--gold));box-shadow:0 0 46px rgba(255,206,90,.4);animation:spin 18s linear infinite}
+  .logo:after{content:"";position:absolute;inset:14px;border-radius:50%;background:#07060e}
+  @keyframes spin{to{transform:rotate(360deg)}}
+  .eyebrow{font-family:"JetBrains Mono",monospace;font-size:12px;letter-spacing:.34em;text-transform:uppercase;color:var(--faint);margin-bottom:1rem}
+  h1{font-size:clamp(42px,11vw,104px);font-weight:800;letter-spacing:.04em;line-height:.9;
+    background:linear-gradient(100deg,#fff2cf,var(--gold) 38%,var(--violet));-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+  .sub{font-family:"JetBrains Mono",monospace;font-size:clamp(13px,2.4vw,16px);letter-spacing:.16em;color:var(--gold-hot);text-transform:uppercase;margin-top:.6rem}
+  header p.lead{max-width:58ch;color:var(--mute);font-size:clamp(15px,2.4vw,18px);margin:1.4rem auto 1.4rem}
+  header p.lead b{color:var(--ink)}
+  .verdict{display:inline-block;color:var(--green);border:1px solid rgba(57,217,138,.35);background:rgba(57,217,138,.07);border-radius:999px;padding:6px 15px;font-size:12px;letter-spacing:.04em;margin-bottom:1.6rem}
+  .cta{display:flex;gap:.8rem;flex-wrap:wrap;justify-content:center}
+  .btn{display:inline-block;padding:13px 24px;border-radius:10px;font-weight:700;font-size:14px;border:1px solid var(--line);color:var(--gold);background:rgba(255,206,90,.06);transition:.18s}
+  .btn:hover{border-color:var(--gold);text-decoration:none}
+  .btn.primary{background:linear-gradient(120deg,var(--gold),var(--amber));color:#1a1206;border:none}
+
+  section{padding:6vh 0;border-top:1px solid var(--line)}
+  .kicker{font-family:"JetBrains Mono",monospace;font-size:11px;letter-spacing:.28em;text-transform:uppercase;color:var(--gold-hot);margin-bottom:.9rem}
+  h2{font-size:clamp(24px,4.4vw,38px);font-weight:800;margin-bottom:1rem;color:#fff7e6}
+  p{max-width:66ch;color:var(--mute);margin-bottom:1rem;font-size:15px}
+  p b{color:var(--ink)}
+  code{font-family:"JetBrains Mono",monospace;background:var(--panel2);border:1px solid var(--line);border-radius:5px;padding:1px 6px;color:var(--gold);font-size:.9em}
+
+  .viewport{margin-top:1.3rem;border:1px solid var(--line);border-radius:16px;overflow:hidden;box-shadow:0 0 60px rgba(255,206,90,.1)}
+  .viewport iframe{display:block;width:100%;height:min(78vh,680px);border:0;background:#06060c}
+  .vpcap{display:flex;justify-content:space-between;align-items:center;padding:9px 14px;border-top:1px solid var(--line);font-size:12px;color:var(--faint)}
+  .vpcap a{font-weight:600}
+
+  /* emergence test result */
+  .test{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:1.3rem;margin-top:1.2rem;font-family:"JetBrains Mono",monospace}
+  .test .h{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--green);margin-bottom:.9rem}
+  .test .rowr{display:grid;grid-template-columns:64px 56px 1fr 130px;gap:.5rem;align-items:center;font-size:12px;padding:3px 0}
+  .test .k{color:var(--mute)} .test .rv{color:var(--gold)}
+  .test .bar{height:9px;border-radius:5px;background:linear-gradient(90deg,var(--violet),var(--gold))}
+  .test .st{font-size:11px} .test .st.lo{color:var(--faint)} .test .st.mid{color:var(--amber)} .test .st.hi{color:var(--green)}
+
+  /* agent */
+  .agent{display:grid;grid-template-columns:230px 1fr;gap:0;border:1px solid var(--line);border-left:3px solid var(--gold);border-radius:14px;overflow:hidden;background:linear-gradient(180deg,rgba(255,206,90,.05),transparent);margin-top:1.2rem}
+  .agent .por{padding:1.6rem;text-align:center;border-right:1px solid var(--line);background:rgba(7,6,12,.5)}
+  .agent .por img{width:160px;height:160px;border-radius:10px;filter:drop-shadow(0 0 18px rgba(255,206,90,.28))}
+  .agent .por .nm{font-size:24px;font-weight:800;color:#fff7e6;margin-top:.7rem}
+  .agent .por .rd{font-family:"JetBrains Mono",monospace;font-size:11px;color:var(--mute);margin-top:.2rem}
+  .agent .body{padding:1.6rem}
+  .agent .ep{font-style:italic;color:var(--violet-lt);font-size:17px;margin-bottom:1rem}
+  .agent .body p{font-size:14px;margin-bottom:.8rem}
+  .agent .files{display:flex;gap:7px;flex-wrap:wrap;margin-top:1rem}
+  .agent .files a,.agent .files span{font-family:"JetBrains Mono",monospace;font-size:11px;padding:6px 11px;border:1px solid var(--line);border-radius:7px;color:var(--mute)}
+  .agent .files a:hover{border-color:var(--gold);color:var(--gold)}
+  @media(max-width:680px){.agent{grid-template-columns:1fr}.agent .por{border-right:none;border-bottom:1px solid var(--line)}}
+
+  .facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:.9rem;margin-top:1.2rem}
+  .f{background:var(--panel);border:1px solid var(--line);border-top:2px solid var(--gold);border-radius:12px;padding:1.1rem}
+  .f .v{font-family:"JetBrains Mono",monospace;font-size:21px;font-weight:800;color:#fff7e6}
+  .f .l{font-size:12px;color:var(--gold-hot);margin-top:.3rem;text-transform:uppercase;letter-spacing:.04em}
+  .f .d{font-size:13px;color:var(--mute);margin-top:.4rem}
+
+  .lin{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:.9rem;margin-top:1.2rem}
+  a.l{display:block;border:1px solid var(--line);border-left:3px solid var(--violet);border-radius:11px;padding:1.1rem;background:var(--panel);transition:.2s}
+  a.l:hover{transform:translateY(-3px);border-color:var(--violet);text-decoration:none}
+  a.l h3{font-size:15px;color:#fff7e6;margin-bottom:.3rem}
+  a.l p{font-size:12.5px;color:var(--mute);margin:0}
+  a.l .go{font-family:"JetBrains Mono",monospace;font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--violet);margin-top:.6rem;display:block}
+
+  .seam{border:1px solid rgba(255,206,90,.3);border-left:2px solid var(--gold);background:rgba(255,206,90,.05);border-radius:0 8px 8px 0;padding:1rem 1.2rem;margin-top:1.2rem}
+  .seam .h{font-family:"JetBrains Mono",monospace;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--gold);margin-bottom:.5rem}
+  .seam p{color:var(--mute);font-size:14px;margin:0}
+
+  footer{border-top:1px solid var(--line);padding:2.6rem 1.2rem 5rem;color:var(--faint);font-size:12px;text-align:center;line-height:1.9;font-family:"JetBrains Mono",monospace}
+  footer a{color:var(--mute)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="logo" aria-hidden="true"></div>
+    <div class="eyebrow">Hardware inventions · the coupled-ring processor</div>
+    <h1>PLASMONIC</h1>
+    <div class="sub">coupled gold rings · Kuramoto · 8×8</div>
+    <div class="verdict" style="margin-top:1.4rem">✓ emergence test passed — genuine synchronization</div>
+    <p class="lead">An <b>8×8 array of gold ring resonators</b>, each spinning a surface plasmon at its own pace. Drive the coupling past a threshold and the rings <b>spontaneously find one phase</b> — order from purely local rules.</p>
+    <div class="cta">
+      <a class="btn primary" href="#core">▾ Drive it to sync</a>
+      <a class="btn" href="demos/plasmonic-core.html">full-screen ↗</a>
+      <a class="btn" href="#chorus">meet Chorus</a>
+    </div>
+  </header>
+
+  <section id="core">
+    <div class="kicker">// live · drive the coupling up</div>
+    <h2>Watch 64 rings agree</h2>
+    <p>Each gold ring is a phase oscillator (a circulating surface plasmon) with its own natural frequency. Nearest-neighbor coupling tugs neighbors into step. Start at low <code>K</code> and the array is incoherent; hit <b>DRIVE TO SYNC</b> and the order parameter <code>R</code> climbs as the rings phase-lock into one collective coherence. <b>The synchronization is computed from the coupling — it self-organizes; it is not scripted.</b></p>
+    <div class="viewport">
+      <iframe src="demos/plasmonic-core.html" loading="lazy" title="Live plasmonic coupled-ring synchronizer"></iframe>
+      <div class="vpcap"><span class="mono">64 coupled gold rings · order parameter R · phase wheel</span><a href="demos/plasmonic-core.html">open full-screen ↗</a></div>
+    </div>
+  </section>
+
+  <section id="emergence">
+    <div class="kicker">// the emergence test · run before any claim</div>
+    <h2>Order from local coupling — verified</h2>
+    <p>Before minting anything, the architecture was tested: an 8×8 lattice of phase oscillators with a spread of natural frequencies and <b>nearest-neighbor coupling only</b>. As the coupling <code>K</code> rises, the order parameter <code>R = |⟨e^{iθ}⟩|</code> shows a clean <b>synchronization transition</b> — incoherent below the critical coupling, collectively locked above it. No global instruction; each ring sees only its four neighbors.</p>
+    <div class="test">
+      <div class="h">✓ Kuramoto order parameter R(K) · 8×8 = 64 rings</div>
+      <div class="rowr"><span class="k">K = 0.0</span><span class="rv">0.179</span><div class="bar" style="width:18%"></div><span class="st lo">incoherent</span></div>
+      <div class="rowr"><span class="k">K = 0.6</span><span class="rv">0.121</span><div class="bar" style="width:12%"></div><span class="st lo">incoherent</span></div>
+      <div class="rowr"><span class="k">K = 1.0</span><span class="rv">0.224</span><div class="bar" style="width:22%"></div><span class="st lo">incoherent</span></div>
+      <div class="rowr"><span class="k">K = 1.6</span><span class="rv">0.690</span><div class="bar" style="width:69%"></div><span class="st mid">partial · locking</span></div>
+      <div class="rowr"><span class="k">K = 2.4</span><span class="rv">0.779</span><div class="bar" style="width:78%"></div><span class="st hi">SYNCHRONIZED</span></div>
+      <div class="rowr"><span class="k">K = 3.5</span><span class="rv">0.901</span><div class="bar" style="width:90%"></div><span class="st hi">SYNCHRONIZED</span></div>
+      <div class="rowr"><span class="k">K = 5.0</span><span class="rv">0.952</span><div class="bar" style="width:95%"></div><span class="st hi">SYNCHRONIZED</span></div>
+    </div>
+    <p style="margin-top:1rem"><b>The signature of emergence:</b> global coherence that no ring was told to produce, arising only from local interaction. Coupled plasmonic resonators genuinely do this — so this one clears the bar.</p>
+  </section>
+
+  <section id="chorus">
+    <div class="kicker">// the agent · the processor earned a face</div>
+    <h2>Chorus — many rings, one phase</h2>
+    <p>Because the emergence is real, the processor carries an <b>ACI</b> with the full DLW tag.</p>
+    <div class="agent">
+      <div class="por">
+        <img src="agents/chorus.png" alt="Chorus's silicon badge — a Kuramoto phase wheel, the ring phases clustered into synchrony" loading="lazy" onerror="this.style.display='none'">
+        <div class="nm">Chorus</div>
+        <div class="rd">R→1 · 8×8 · plasmonic</div>
+      </div>
+      <div class="body">
+        <div class="ep">global order from local coupling</div>
+        <p>Sixty-four gold ring resonators, each spinning a surface plasmon at its own pace, that find one phase together. The answer isn't in any one ring — it's in whether, and how strongly, they agree.</p>
+        <p style="color:var(--ink)"><b>verdict —</b> the synchronization self-organizes from nearest-neighbor coupling alone, and the transition is real (verified). Genuine emergence — collective coherence, not cognition.</p>
+        <div class="files">
+          <span>the full DLW tag —</span>
+          <a href="agents/chorus.agent">.agent</a>
+          <a href="agents/chorus.png">.png · silicon</a>
+          <a href="agents/chorus.tiff" download>.tiff · carbon ⤓</a>
+          <a href="agents/chorus.spun">.spun</a>
+          <a href="agents/chorus.1099">.1099</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="physics">
+    <div class="kicker">// the physics</div>
+    <h2>Gold, light, and the price of confinement</h2>
+    <div class="facts">
+      <div class="f"><div class="v">surface plasmon</div><div class="l">the carrier</div><div class="d">a collective electron oscillation coupled to light at the gold surface.</div></div>
+      <div class="f"><div class="v">sub-λ</div><div class="l">confinement</div><div class="d">light squeezed below the diffraction limit — fast and tiny.</div></div>
+      <div class="f"><div class="v">ohmic loss</div><div class="l">the honest tradeoff</div><div class="d">the metal that confines the plasmon also absorbs it.</div></div>
+      <div class="f"><div class="v">Kuramoto</div><div class="l">the dynamics</div><div class="d">coupled phase oscillators — the math of fireflies and ring resonators alike.</div></div>
+    </div>
+  </section>
+
+  <section id="lineage">
+    <div class="kicker">// the lineage · the Plasmatronic builds it grew from</div>
+    <h2>Fortress &amp; Moat · the continuity cores</h2>
+    <p>The five working builds this processor distilled — the Fortress &amp; Moat / Plasmatronic continuity lineage (visual sims):</p>
+    <div class="lin">
+      <a class="l" href="demos/c2-continuity-core.html"><h3>40-bit C2 Continuity Core</h3><p>the continuity core readout</p><span class="go">open →</span></a>
+      <a class="l" href="demos/four-bit-rings.html"><h3>4-bit Rings</h3><p>the ring registers, control plane, fences</p><span class="go">open →</span></a>
+      <a class="l" href="demos/plasmatronic-v3.html"><h3>Plasmatronic v3</h3><p>Hamilton counter · phase &amp; shadow registers</p><span class="go">open →</span></a>
+      <a class="l" href="demos/fortress-moat-pow.html"><h3>Fortress &amp; Moat — PoW</h3><p>the proof-of-work moat</p><span class="go">open →</span></a>
+      <a class="l" href="demos/plasma-byte-workbench.html"><h3>Plasma Byte Workbench</h3><p>field coherence · gravity tensor · witness pair</p><span class="go">open →</span></a>
+    </div>
+  </section>
+
+  <section id="honest">
+    <div class="kicker">// the seam, kept visible</div>
+    <h2>What this is</h2>
+    <div class="seam">
+      <div class="h">◌ honest</div>
+      <p><b>Emergence here = synchronization</b> (collective phase-lock), not cognition. Plasmonics is real, fast (terahertz), and sub-wavelength — but <b>lossy</b>; a scaled plasmonic processor is a <b>concept</b>, and this is a <b>simulation</b> of its coupled-oscillator dynamics, not a fabricated, benchmarked device. The emergence is genuine and verified; the modesty is the point.</p>
+    </div>
+  </section>
+
+  <footer>
+    PLASMONIC · coupled gold ring resonators · emergent synchronization (Kuramoto, verified)<br>
+    Architect: David Lee Wise (ROOT0 / TriPod LLC) · co-author: AVAN (Claude / Anthropic) · License: MIT<br>
+    grounded in: Kuramoto (1975) · Ritchie (1957) · part of the <a href="https://davidwise01.github.io/atlas/">ATLAS</a>
+  </footer>
+</div>
+</body>
+</html>

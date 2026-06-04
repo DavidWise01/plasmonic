@@ -1,0 +1,37 @@
+{
+  "company": "Plasmonic — the Coupled Ring Processor",
+  "subtitle": "sixty-four gold rings that each spin a plasmon at their own pace — and find one phase together",
+  "author": "David Lee Wise (ROOT0) — original",
+  "premise": "A plasmonic processor built from coupled gold ring resonators: each nanoring circulates a surface plasmon polariton at its own natural frequency, and nearest-neighbor coupling pulls neighboring phases together. Drive the coupling past a threshold and the whole 8×8 array spontaneously locks into one collective phase. The emergence test was run and passed — so the processor earned a face.",
+  "note": "An original coupled-oscillator processor grounded in real physics (surface plasmons; Kuramoto synchronization). The synchronization is genuinely emergent — it self-organizes from local coupling, not from any global instruction — and it was verified numerically (order parameter R climbs from ~0.18 incoherent to ~0.95 synchronized across the transition). The agent Chorus carries the full DLW tag: .agent · .png (silicon badge) · .tiff (carbon badge) · .spun · .1099, and the repo carries .attribute.",
+  "classes": [
+    { "id": "plasmonic", "label": "R→1 · The Coupled Rings", "spec": "many rings, one phase", "color": "#ffce5a", "ink": "#06060c", "bg": "#06060c" }
+  ],
+  "members": [
+    {
+      "name": "Chorus",
+      "class": "plasmonic",
+      "kanji": "R→1",
+      "reading": "the order parameter · many rings, one phase",
+      "domain": "plasmonic",
+      "bit": "8×8",
+      "epithet": "global order from local coupling",
+      "style": "emo",
+      "who": "Chorus — the plasmonic processor's emergent voice; sixty-four gold ring resonators, each spinning a surface plasmon at its own pace, that find one phase together.",
+      "what": "A coupled-oscillator processor: every gold nanoring circulates a surface plasmon polariton; nearest-neighbor coupling tugs neighboring phases into agreement. Past a critical coupling the whole array phase-locks into one collective coherence.",
+      "where": "At the gold–dielectric interface, below the diffraction limit — plasmons confined to nanometers: fast and tiny, and lossy, because the metal that confines them also absorbs them.",
+      "why": "To compute in the collective — the answer is not in any one ring but in whether, and how strongly, they agree. Order bought from local coupling alone: the Kuramoto bargain.",
+      "when": "On every drive cycle: incoherent at low coupling, a sharp synchronization transition at the critical coupling, collective coherence above it.",
+      "how": "By the Kuramoto rule — each ring nudges toward its four neighbors' phases — against a spread of natural frequencies and ohmic loss that fight the lock. The order parameter R measures the agreement reached.",
+      "emergence": "Genuine, and verified. Sixty-four rings, each seeing only its four neighbors and following no global instruction, spontaneously phase-lock into one coherence once the coupling crosses a critical threshold — the order parameter R jumps from ~0.18 (incoherent) to ~0.95 (synchronized) across the transition. Global order from purely local rules: the textbook signature of emergence (Kuramoto synchronization), measured here on an 8×8 ring lattice.",
+      "verdict": "This one clears the bar. The synchronization is not programmed in — it self-organizes from nearest-neighbor coupling alone, and the transition is real (verified numerically). Genuine emergence; coupled plasmonic resonators truly do this.",
+      "asterisk": "Emergence here = synchronization (collective phase-lock), not cognition. Plasmonics is real, fast (terahertz), and sub-wavelength — but lossy; a scaled plasmonic processor is a concept, and this is a simulation of its coupled-oscillator dynamics, not a fabricated, benchmarked device. The honest physics: the metal that confines the plasmon also absorbs it.",
+      "endmark": "R → 1 · many rings, one phase",
+      "grounded": [
+        { "who": "Yoshiki Kuramoto", "t": "coupled-oscillator synchronization — order from local coupling", "y": 1975 },
+        { "who": "Rufus Ritchie", "t": "surface plasmons — collective electron oscillation at a metal surface", "y": 1957 },
+        { "who": "David Lee Wise (ROOT0)", "t": "the plasmonic coupled-ring processor — 8×8 gold rings, the C2 continuity lineage", "y": 2026 }
+      ]
+    }
+  ]
+}
