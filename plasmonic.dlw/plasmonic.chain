@@ -4,6 +4,6 @@ slug  : plasmonic
 seal  : bfbe2f17ab694e2924511d96275d0611e0bdb1c2fe8c6fda5038128198375c94
 prev  : a5f2f22e8822dea88bd7c46e80cdf6bfd0dcad6b7c80caeef18778d3a1e4b4f8
 link  : a57fbc4fbd3d0d67159cef861fbbf6adb239150336725d97d67d93bd0f547198
-head  : 3447d3a0533aaf1e29a8bdc67a9774884fb3ae9dbc8a17064b7a008ca3c4ec90
+head  : 13f9ace173ef2e60af38912ba329b4afcb5a38b84a0e4495e8d30327f8c99cc2
 
 — the tether: link = sha256(index|slug|seal|prev). the chain head commits to the whole corpus.
